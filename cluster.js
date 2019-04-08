@@ -12,14 +12,6 @@ if (cluster.isMaster) {
     for (let i = 0; i < cpusCount - 1; i++) {
         const worker = cluster.fork();
 
-        worker.on('exit', () => {
-            console.log(`Worker died! Pid: ${worker.process.pid}`);
-
-            // если воркер умирает, то запускаем новый,
-            // потому что появляется свободное ядро
-            cluster.fork();
-        });
-
         // отправялем сообщение серверу
         worker.send('Hello from server!');
 
@@ -28,6 +20,17 @@ if (cluster.isMaster) {
             console.log(`Message from worker ${worker.process.pid}: ${JSON.stringify(message)}`);
         });
     }
+
+    cluster.on('exit', (worker, code) => {
+        console.log(`Worker died! Pid: ${worker.process.pid}. Code: ${code}`);
+
+        // если воркер умирает, и умер он из-за ошибки, 
+        // то запускаем новый,
+        // потому что появляется свободное ядро
+        if (code === 1) {
+            cluster.fork();
+        }
+    });
 }
 
 if (cluster.isWorker) {
