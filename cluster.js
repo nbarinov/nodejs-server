@@ -19,9 +19,25 @@ if (cluster.isMaster) {
             // потому что появляется свободное ядро
             cluster.fork();
         });
+
+        // отправялем сообщение серверу
+        worker.send('Hello from server!');
+
+        // отслеживаем обращения
+        worker.on('message', (message) => {
+            console.log(`Message from worker ${worker.process.pid}: ${JSON.stringify(message)}`);
+        });
     }
 }
 
 if (cluster.isWorker) {
     require('./worker.js');
+
+    // отслеживаем обращения
+    process.on('message', (message) => {
+        console.log(`Message from master: ${message}`);
+    });
+
+    // отправялем сообщения
+    process.send({ text: 'Hello!', pid });
 }
