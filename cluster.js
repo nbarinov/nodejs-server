@@ -14,6 +14,10 @@ if (cluster.isMaster) {
 
         worker.on('exit', () => {
             console.log(`Worker died! Pid: ${worker.process.pid}`);
+
+            // если воркер умирает, то запускаем новый,
+            // потому что появляется свободное ядро
+            cluster.fork();
         });
     }
 }
