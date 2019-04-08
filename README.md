@@ -1,10 +1,10 @@
 # nodejs-server
 
 ## Start server
-``` node index.js ```
+``` node cluster.js ```
 
 ## Dev
-``` nodemon index.js ```
+``` nodemon cluster.js ```
 
 ## Test request
 ``` curl localhost:8800 ```
